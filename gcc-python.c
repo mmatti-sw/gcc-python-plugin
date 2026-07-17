@@ -781,7 +781,12 @@ plugin_init (struct plugin_name_args *plugin_info,
 
       Suppress the buffering, to better support mixed gcc/python output:
     */
+    /* Py_UnbufferedStdioFlag was deprecated in Python 3.12; no replacement
+       needed since Python 3.7+ initializes in unbuffered mode by default
+       when PYTHONUNBUFFERED is set, and plugins can set it in the env. */
+#if PY_VERSION_HEX < 0x030c0000
     Py_UnbufferedStdioFlag = 1;
+#endif
 #endif
 
     PyImport_AppendInittab("gcc", PyInit_gcc);
@@ -794,7 +799,11 @@ plugin_init (struct plugin_name_args *plugin_info,
 
     PyGcc_globals.module = PyImport_ImportModule("gcc");
 
+    /* PyEval_InitThreads() was made a no-op in Python 3.7 and is
+       deprecated since 3.9; skip it on 3.7+. */
+#if PY_VERSION_HEX < 0x03070000
     PyEval_InitThreads();
+#endif
   
     if (!PyGcc_init_gcc_module(plugin_info)) {
         return 1;

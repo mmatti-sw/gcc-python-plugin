@@ -61,8 +61,11 @@ dump_generic_node (pretty_printer *buffer, tree node, int spc, dump_flags_t flag
 		   bool is_stmt);
 #endif
 
-/* Within gcc/gcc-internal.h, not exposed by plugin API */
+/* Within gcc/gcc-internal.h, not exposed by plugin API.
+   Removed in GCC 12; replaced by ggc_collect(GGC_COLLECT_FORCE). */
+#if (GCC_VERSION < 12000)
 extern bool ggc_force_collect;
+#endif
 
 /* From c-family/c-common.h */
 #if GCC_VERSION < 4008

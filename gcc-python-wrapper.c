@@ -337,11 +337,14 @@ PyGcc_wrapper_init(void)
 static void
 force_gcc_gc(void)
 {
+#if (GCC_VERSION >= 12000)
+    ggc_collect(GGC_COLLECT_FORCE);
+#else
     bool stored = ggc_force_collect;
-
     ggc_force_collect = true;
     ggc_collect();
     ggc_force_collect = stored;
+#endif
 }
 
 PyObject *

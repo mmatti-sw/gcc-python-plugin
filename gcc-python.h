@@ -386,7 +386,12 @@ PyGcc_GetReprOfAttribute(PyObject *obj, const char *attrname);
 #define PyGccString_FromFormat PyUnicode_FromFormat
 #define PyGccString_FromString PyUnicode_FromString
 #define PyGccString_FromString_and_size PyUnicode_FromStringAndSize
+/* _PyUnicode_AsString is a deprecated private alias for PyUnicode_AsUTF8 */
+#if PY_VERSION_HEX >= 0x030d0000
+#define PyGccString_AsString PyUnicode_AsUTF8
+#else
 #define PyGccString_AsString _PyUnicode_AsString
+#endif
 #define PyGccInt_FromLong PyLong_FromLong
 #define PyGccInt_Check PyLong_Check
 #define PyGccInt_AsLong PyLong_AsLong

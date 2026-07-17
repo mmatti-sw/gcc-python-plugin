@@ -199,6 +199,24 @@ PyGcc_CallbackFor_tree(void *gcc_data, void *user_data)
 
 
 static void
+PyGcc_CallbackFor_PLUGIN_INCLUDE_FILE(void *gcc_data, void *user_data)
+{
+    PyGILState_STATE gstate;
+    const char *filename = (const char *)gcc_data;
+    PyObject *filename_obj;
+
+    gstate = PyGILState_Ensure();
+
+    filename_obj = filename ? PyGccString_FromString(filename) : Py_None;
+    if (filename == NULL)
+        Py_INCREF(Py_None);
+
+    PyGcc_FinishInvokingCallback(gstate,
+                                        1, filename_obj,
+                                        user_data);
+}
+
+static void
 PyGcc_CallbackFor_PLUGIN_ATTRIBUTES(void *gcc_data, void *user_data)
 {
     PyGILState_STATE gstate;
@@ -385,6 +403,30 @@ PyGcc_RegisterCallback(PyObject *self, PyObject *args, PyObject *kwargs)
 			  closure);
 	break;
 #endif /* GCC_PYTHON_PLUGIN_CONFIG_has_PLUGIN_FINISH_DECL */
+
+    /* PLUGIN_START_PARSE_FUNCTION and PLUGIN_FINISH_PARSE_FUNCTION were
+       added in GCC 10; gcc_data is a tree (the function decl). */
+    case PLUGIN_START_PARSE_FUNCTION:
+        register_callback("python", // FIXME
+			  (enum plugin_event)event,
+                          PyGcc_CallbackFor_tree,
+			  closure);
+	break;
+
+    case PLUGIN_FINISH_PARSE_FUNCTION:
+        register_callback("python", // FIXME
+			  (enum plugin_event)event,
+                          PyGcc_CallbackFor_tree,
+			  closure);
+	break;
+
+    /* PLUGIN_INCLUDE_FILE: gcc_data is a const char* filename. */
+    case PLUGIN_INCLUDE_FILE:
+        register_callback("python", // FIXME
+			  (enum plugin_event)event,
+                          PyGcc_CallbackFor_PLUGIN_INCLUDE_FILE,
+			  closure);
+	break;
 
     default:
         PyErr_Format(PyExc_ValueError, "event type %i invalid (or not wired up yet)", event);
