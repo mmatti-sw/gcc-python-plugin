@@ -23,9 +23,15 @@ Requirements
 
 The plugin has the following requirements:
 
-  * GCC: 4.6 or later (it uses APIs that weren't exposed to plugins in 4.5)
+  * GCC, with the plugin development headers for that exact GCC version
+    (e.g. the ``gcc-N-plugin-dev`` or ``gcc-plugin-devel`` package), and the
+    matching C++ compiler, since the plugin is compiled as C++.
 
-  * Python: requires 2.7 or 3.2 or later
+    GCC's internals change between releases, so compatibility is established
+    and tested separately for each GCC release.  Support for GCC 4.6 through
+    8 is historical; see the README for the GCC releases currently verified.
+
+  * Python 3, with its development headers.  Python 2 is no longer supported.
 
   * "six": The libcpychecker code uses the "six" Python compatibility library to
     smooth over Python 2 vs Python 3 differences, both at build-time and
@@ -79,15 +85,7 @@ On a Fedora box you can install them by running the following as root:
 
 .. code-block:: bash
 
-   yum install gcc-plugin-devel python-devel python-six python-pygments graphviz
-
-for building against Python 2, or:
-
-.. code-block:: bash
-
-   yum install gcc-plugin-devel python3-devel python3-six python3-pygments graphviz
-
-when building for Python 3.
+   dnf install gcc-c++ gcc-plugin-devel python3-devel python3-six python3-pygments graphviz
 
 Building the code
 ------------------

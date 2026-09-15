@@ -28,17 +28,38 @@ The documentation can be seen at:
   http://gcc-python-plugin.readthedocs.io/en/latest/index.html
 
 
+Maintenance status
+------------------
+
+The plugin is being modernized and maintained at
+https://github.com/mmatti-sw/gcc-python-plugin.
+
+It was originally developed against GCC 4.6 through 8 and Python 2.7 and 3.x.
+That support is historical and is no longer maintained.
+
+GCC does not provide a stable plugin API: its internals change from one
+release to the next, so compatibility has to be established, and tested,
+separately for each GCC release.  Compatibility with current GCC releases is
+being re-established, and no GCC release is claimed as supported until the
+plugin has been built and its test suite run against it.  Verified GCC
+releases will be listed here.
+
+Python 3 is the maintenance target; Python 2 is no longer supported.
+
+x86_64 and ppc64le are the intended test platforms.
+
+
 Requirements
 ------------
 
-* GCC: 4.6 or later (it uses APIs that weren't exposed to plugins in 4.5)
+* GCC, with the plugin development headers for that exact GCC version: usually
+  available in distribution packages such as ``gcc-N-plugin-dev`` or
+  ``gcc-plugin-devel``.  The plugin is compiled as C++, so the matching C++
+  compiler (e.g. ``g++-N``) is needed as well.  See "Maintenance status" above
+  for which GCC releases have been verified.
 
-  * tested with 4.8, 4.9, 5, 6, 7, and 8.
-
-* GCC plugin development package: usually available in distribution packages
-  such as ``gcc-N-plugin-dev`` or ``gcc-plugin-devel``.
-
-* Python: requires 2.7 or 3.2 or later
+* Python 3, with its development headers (e.g. ``python3-dev`` or
+  ``python3-devel``)
 
 * "six": The libcpychecker code uses the "six_" Python compatibility library to
   smooth over Python 2 vs Python 3 differences, both at build-time and
@@ -62,8 +83,8 @@ You can also use::
 
 to demonstrate the new compiler errors.
 
-Development has been on x86_64 and I don't know to what extent it will be
-compatible with other architectures.
+The plugin was originally developed on x86_64.  x86_64 and ppc64le are the
+intended test platforms; other architectures have not been verified.
 
 There isn't an installer yet.  In theory you should be able to add these
 arguments to the gcc invocation::
