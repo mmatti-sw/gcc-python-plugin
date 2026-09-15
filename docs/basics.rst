@@ -111,15 +111,14 @@ You can also use::
 
 to demonstrate the new compiler errors.
 
-By default, the `Makefile` builds the plugin using the first ``python-config``
-tool found in `$PATH` (e.g. `/usr/bin/python-config`), which is typically the
-system copy of Python 2.  You can override this (e.g. to build against
-Python 3) by overriding the `PYTHON` and `PYTHON_CONFIG` Makefile variables
-with:
+By default, the `Makefile` builds the plugin with the ``python3`` and
+``python3-config`` tools found in `$PATH`.  You can select a different Python 3
+installation by overriding the `PYTHON` and `PYTHON_CONFIG` Makefile variables,
+e.g.:
 
 .. code-block:: bash
 
-   make PYTHON=python3 PYTHON_CONFIG=python3-config
+   make PYTHON=python3.12 PYTHON_CONFIG=python3.12-config
 
 There isn't a well-defined process yet for installing the plugin (though the
 rpm specfile in the source tree contains some work-in-progress towards this).

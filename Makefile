@@ -83,19 +83,16 @@ GENERATOR_DEPS=cpybuilder.py wrapperbuilder.py print-gcc-version
 # as we're linking against, and that the cpychecker will be testing that same
 # version of Python
 #
-# By default, build against "python", using "python-config" to query for
+# By default, build against "python3", using "python3-config" to query for
 # compilation options.  You can override this by passing other values for
 # PYTHON and PYTHON_CONFIG when invoking "make" (or by simply hacking up this
 # file): e.g.
-#    make  PYTHON=python3  PYTHON_CONFIG=python3-config  all
+#    make  PYTHON=python3.12  PYTHON_CONFIG=python3.12-config  all
 
 # The python interpreter to use:
-PYTHON=python
+PYTHON=python3
 # The python-config executable to use:
-PYTHON_CONFIG=python-config
-
-#PYTHON=python3
-#PYTHON_CONFIG=python3-config
+PYTHON_CONFIG=python3-config
 
 #PYTHON=python-debug
 #PYTHON_CONFIG=python-debug-config
