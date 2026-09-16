@@ -301,7 +301,7 @@ $(pwd)/gcc-with-cpychecker: gcc-with-cpychecker
 
 # A simple demo, to make it easy to demonstrate the cpychecker:
 demo: demo.c plugin $(pwd)/gcc-with-cpychecker
-	$(INVOCATION_ENV_VARS) ./gcc-with-cpychecker -c $(PYTHON_INCLUDES) $<
+	$(INVOCATION_ENV_VARS) $(PYTHON) ./gcc-with-cpychecker -c $(PYTHON_INCLUDES) $<
 
 # Run 'demo', and verify the output.
 testdemo: DEMO_REF=$(shell \
@@ -321,7 +321,7 @@ testdemo: plugin print-gcc-version
 	rm demo.out demo.err demo.filtered
 
 json-examples: plugin
-	$(INVOCATION_ENV_VARS) $(srcdir)./gcc-with-cpychecker -I/usr/include/python2.7 -c libcpychecker_html/test/example1/bug.c
+	$(INVOCATION_ENV_VARS) $(PYTHON) $(srcdir)./gcc-with-cpychecker -I/usr/include/python2.7 -c libcpychecker_html/test/example1/bug.c
 
 test-suite: plugin print-gcc-version testdejagnu testdemo
 	$(INVOCATION_ENV_VARS) $(PYTHON) $(srcdir)./run-test-suite.py $(if $(srcdir),--srcdir=$(srcdir))
