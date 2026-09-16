@@ -85,8 +85,8 @@ class TestStream:
                 expdata = expdata.replace('<type ', '<class ')
                 expdata = expdata.replace('__builtin__', 'builtins')
                 # replace long literals with int literals:
-                expdata = re.sub('([0-9]+)L', '\g<1>', expdata)
-                expdata = re.sub('(0x[0-9a-f]+)L', '\g<1>', expdata)
+                expdata = re.sub('([0-9]+)L', r'\g<1>', expdata)
+                expdata = re.sub('(0x[0-9a-f]+)L', r'\g<1>', expdata)
                 expdata = expdata.replace('PyStringObject',
                                           'PyBytesObject')
                 expdata = expdata.replace('PyString_Type',
@@ -127,9 +127,9 @@ class TestStream:
             # Remove exact numbers from declarations
             # (e.g. from "D.12021->fieldA" to "D.nnnnn->fieldA"):
             line = re.sub('D.([0-9]+)', 'D.nnnnn', line)
-            line = re.sub('VarDecl\(([0-9]+)\)', 'VarDecl(nnnn)', line)
-            line = re.sub('ParmDecl\(([0-9]+)\)', 'ParmDecl(nnnn)', line)
-            line = re.sub('LabelDecl\(([0-9]+)\)', 'LabelDecl(nnnn)', line)
+            line = re.sub(r'VarDecl\(([0-9]+)\)', 'VarDecl(nnnn)', line)
+            line = re.sub(r'ParmDecl\(([0-9]+)\)', 'ParmDecl(nnnn)', line)
+            line = re.sub(r'LabelDecl\(([0-9]+)\)', 'LabelDecl(nnnn)', line)
 
             # Remove exact numbers from types
             # (e.g. from "int (*<T513>) (int)" to "int (*<Tnnn>) (int)"):

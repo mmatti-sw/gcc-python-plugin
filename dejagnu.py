@@ -30,14 +30,14 @@ class Directive:
         self.name = name
         self.args = self.parse_args(args)
         if len(self.args) == 4:
-            m = re.match('\.(-?[0-9]+)', self.args[3])
+            m = re.match(r'\.(-?[0-9]+)', self.args[3])
             offset = int(m.group(1))
             self.linenum += offset
 
     @staticmethod
     def parse_args(args):
         quoted_group = '"([^"]*)"'
-        ws = '\s+'
+        ws = r'\s+'
         m = re.match(quoted_group + ws + quoted_group + ws + '{(.*)}' + ws + '(.+)', args)
         if m:
             return list(m.groups())
@@ -54,7 +54,7 @@ class Directive:
         if m:
             return list(m.groups())
 
-        m = re.match('(\S+)', args)
+        m = re.match(r'(\S+)', args)
         if m:
             return list(m.groups())
 
@@ -79,7 +79,7 @@ class ExpectedDiagnostic:
             self.pattern = m.group(2)
         else:
             colnum_pattern = '[0-9]+'
-        self.pattern = ('\S+:%i:%s: %s: %s\n'
+        self.pattern = ('\\S+:%i:%s: %s: %s\n'
                         % (linenum, colnum_pattern, self.kind, self.pattern))
 
     def __repr__(self):
@@ -218,7 +218,7 @@ class DgContext:
     def prune_stderr(self, stderr):
         # Prune lines like this:
         #    tests/plugin/rich-location/input.c: In function 'test_1':
-        stderr = re.sub("(\S+: In function '.+':)\n", '', stderr)
+        stderr = re.sub("(\\S+: In function '.+':)\n", '', stderr)
         for d in self.expected_diagnostics:
             stderr, count = re.subn(d.pattern, '', stderr, 1)
             if count == 1:

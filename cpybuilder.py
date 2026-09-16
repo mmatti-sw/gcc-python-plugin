@@ -544,7 +544,7 @@ class PyVersionInfo(namedtuple('PyVersionInfo', 'major minor micro releaselevel 
     def from_text(cls, txt):
         # e.g.:
         #   sys.version_info(major=2, minor=7, micro=1, releaselevel='final', serial=0)
-        m = re.match('sys\.version_info\(major=([0-9]+), minor=([0-9]+), micro=([0-9]+), releaselevel=\'(.*)\', serial=([0-9]+)\)', txt)
+        m = re.match(r'sys\.version_info\(major=([0-9]+), minor=([0-9]+), micro=([0-9]+), releaselevel=\'(.*)\', serial=([0-9]+)\)', txt)
         return PyVersionInfo(major=int(m.group(1)),
                              minor=int(m.group(2)),
                              micro=int(m.group(3)),
