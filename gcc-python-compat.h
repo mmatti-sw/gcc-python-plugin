@@ -82,6 +82,16 @@ extern tree c_sizeof_or_alignof_type (location_t, tree, bool, int);
 #endif
 
 
+/* GCC 15 made pretty_printer::buffer private and renamed
+   output_buffer::stream to m_stream.  The pp_buffer accessor works with
+   every version.  */
+#if (GCC_VERSION >= 15000)
+  #define PyGcc_PP_STREAM(PP) (pp_buffer (PP)->m_stream)
+#else
+  #define PyGcc_PP_STREAM(PP) (pp_buffer (PP)->stream)
+#endif
+
+
 /*
   PEP-7
 Local variables:

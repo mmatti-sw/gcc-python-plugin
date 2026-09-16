@@ -20,6 +20,7 @@
 #include <Python.h>
 #include "gcc-python.h"
 #include "gcc-python-wrappers.h"
+#include "gcc-python-compat.h"
 #if (GCC_VERSION >= 4009)
 /* Needed for placement new */
 #include <new>
@@ -58,7 +59,7 @@ PyGccPrettyPrinter_New(void)
     pp_translate_identifiers(&obj->pp) = false;
 
     /* Connect the pp to the (FILE*): */
-    obj->pp.buffer->stream = obj->file_ptr;
+    PyGcc_PP_STREAM (&obj->pp) = obj->file_ptr;
 
     //printf("PyGccPrettyPrinter_New returning: %p\n", obj);
     
