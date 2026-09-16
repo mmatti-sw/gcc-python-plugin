@@ -1,0 +1,2 @@
+callee: is_builtin=False
+__builtin_trap: is_builtin=True
