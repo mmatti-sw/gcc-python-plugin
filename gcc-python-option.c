@@ -22,6 +22,7 @@
 #include "gcc-python-wrappers.h"
 #include "c-common.h" /* for warn_format */
 #include "diagnostic.h"
+#include "gcc-python-compat.h"
 
 
 /*
@@ -99,11 +100,11 @@ int PyGcc_option_is_enabled(enum opt_code opt_code)
     /* Returns 1 if option OPT_IDX is enabled in OPTS, 0 if it is disabled,
        or -1 if it isn't a simple on-off switch.  */
 #if (GCC_VERSION < 10000)
-    int i = option_enabled (opt_code, global_dc->option_state);
+    int i = option_enabled (opt_code, PyGcc_OPTION_STATE);
 #else
     /* Starting with GCC 10, options can be distinguished by language. */
     /* TODO Expose the lang_mask to the user. */
-    int i = option_enabled (opt_code, CL_LANG_ALL, global_dc->option_state);
+    int i = option_enabled (opt_code, CL_LANG_ALL, PyGcc_OPTION_STATE);
 #endif
 
     if (i == 1) {

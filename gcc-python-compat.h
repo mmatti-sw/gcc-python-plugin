@@ -73,6 +73,15 @@ extern tree c_sizeof_or_alignof_type (location_t, tree, bool, int);
 #endif
 
 
+/* GCC 14 made the diagnostic context's option state private, and GCC 16
+   removed it; GCC sets it to &global_options, so name that directly.  */
+#if (GCC_VERSION >= 14000)
+  #define PyGcc_OPTION_STATE (&global_options)
+#else
+  #define PyGcc_OPTION_STATE (global_dc->option_state)
+#endif
+
+
 /*
   PEP-7
 Local variables:
