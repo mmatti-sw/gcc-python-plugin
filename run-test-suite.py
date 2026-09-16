@@ -47,7 +47,7 @@ import os
 import multiprocessing
 import re
 import sys
-from distutils.sysconfig import get_python_inc
+import sysconfig
 from subprocess import Popen, PIPE
 
 try:
@@ -344,7 +344,7 @@ def run_test(testdir, srcdir):
                 return True
 
     if uses_python_headers():
-        args += ['-I' + get_python_inc()]
+        args += ['-I' + sysconfig.get_config_var('INCLUDEPY')]
 
     # If there's a getopts.py, run it to get additional test-specific
     # command-line options:

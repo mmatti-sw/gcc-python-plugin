@@ -16,7 +16,6 @@
 #   <http://www.gnu.org/licenses/>.
 
 
-from distutils import sysconfig as sc
 import os
 import shutil
 from subprocess import Popen, PIPE
@@ -69,11 +68,11 @@ class BuiltModule:
     def compile_src(self, extra_cflags = None):
         self.args = [os.environ.get('CC', 'gcc')]
         self.args += ['-o', self.modfile]
-        self.args +=  ['-I' + sc.get_python_inc(),
-                       '-I' + sc.get_python_inc(plat_specific=True)]
+        self.args +=  ['-I' + sysconfig.get_config_var('INCLUDEPY'),
+                       '-I' + sysconfig.get_config_var('CONFINCLUDEPY')]
 
         # Get CFLAGS from sysconfig
-        cflags = sc.get_config_var('CFLAGS').split()
+        cflags = sysconfig.get_config_var('CFLAGS').split()
         # Filter out LTO
         cflags = filter(lambda flag: flag != '-flto', cflags)
         self.args += cflags
