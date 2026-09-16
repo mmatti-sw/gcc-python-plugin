@@ -111,6 +111,12 @@ class TestStream:
         # Strip such lines out:
         text = re.sub(r'(\[[0-9]+ refs\]\n)', '', text)
         for line in text.splitlines():
+            # Python 3.11+ underlines the failing expression in tracebacks
+            # with ~ and ^ markers, and the caret under a SyntaxError moves
+            # between Python versions: ignore such marker-only lines.
+            if re.match(r'^\s*[~^]+\s*$', line):
+                continue
+
             if line.startswith("Preprocessed source stored into"):
                 # Handle stuff like this that changes every time:
                 # "Preprocessed source stored into /tmp/ccRm9Xgx.out file, please attach this to your bugreport."
@@ -194,6 +200,10 @@ class TestStream:
             # Python 3.3's unicode reimplementation drops the macro redirection
             # to narrow/wide implementations ("UCS2"/"UCS4")
             line = re.sub('PyUnicodeUCS4_AsUTF8String', 'PyUnicode_AsUTF8String', line)
+
+            # Python 3.11+ unittest reports "test_foo (module.Class.test_foo)";
+            # use the older "test_foo (module.Class)" form:
+            line = re.sub(r'^(\w+) \(([\w.]+)\.\1\)', r'\1 (\2)', line)
 
             # Avoid hardcoding timings from unittest's output:
             line = re.sub(r'Ran ([0-9]+ tests?) in ([0-9]+\.[0-9]+s)',
