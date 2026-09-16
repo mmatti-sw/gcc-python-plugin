@@ -1310,11 +1310,18 @@ PyGcc_TreeMakeListOfPairsFromTreeListChain(tree t)
        PyObject *purpose;
        PyObject *value;
        PyObject *pair;
+       tree value_node;
        purpose = PyGccTree_New(gcc_private_make_tree(TREE_PURPOSE(t)));
        if (!purpose) {
            goto error;
        }
-       value = PyGccTree_New(gcc_private_make_tree(TREE_VALUE(t)));
+       /* The values of an enum are CONST_DECLs in C++, and in C too since
+          GCC 13; report their constant value, as documented.  */
+       value_node = TREE_VALUE(t);
+       if (value_node && TREE_CODE(value_node) == CONST_DECL) {
+           value_node = DECL_INITIAL(value_node);
+       }
+       value = PyGccTree_New(gcc_private_make_tree(value_node));
        if (!value) {
            Py_DECREF(purpose);
            goto error;
