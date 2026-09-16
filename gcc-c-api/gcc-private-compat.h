@@ -22,6 +22,9 @@
    versions
 */
 
+#ifndef INCLUDED__GCC_C_API_PRIVATE_COMPAT_H
+#define INCLUDED__GCC_C_API_PRIVATE_COMPAT_H
+
 /*************************************************************************
  Vectors
  *************************************************************************/
@@ -63,4 +66,6 @@ c-basic-offset: 2
 indent-tabs-mode: nil
 End:
 */
+
+#endif /* INCLUDED__GCC_C_API_PRIVATE_COMPAT_H */
 
