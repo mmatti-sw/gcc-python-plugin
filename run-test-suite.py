@@ -50,8 +50,10 @@ import sys
 from distutils.sysconfig import get_python_inc
 from subprocess import Popen, PIPE
 
-import six
-from six.moves import configparser
+try:
+    import configparser
+except ImportError:
+    import ConfigParser as configparser  # Python 2
 
 from cpybuilder import CommandError
 
@@ -79,7 +81,7 @@ class TestStream:
                 expdata = f.read()
             # The expected data is for Python 2
             # Apply python3 fixups as necessary:
-            if six.PY3:
+            if sys.version_info[0] >= 3:
                 expdata = expdata.replace('<type ', '<class ')
                 expdata = expdata.replace('__builtin__', 'builtins')
                 # replace long literals with int literals:
@@ -91,7 +93,7 @@ class TestStream:
                                           'PyBytes_Type')
             # The expected data is for 64-bit builds of Python
             # Fix it up for 32-bit builds as necessary:
-            if six.MAXSIZE == 0x7fffffff:
+            if sys.maxsize == 0x7fffffff:
                 expdata = expdata.replace('"Py_ssize_t *" (pointing to 64 bits)',
                                           '"Py_ssize_t *" (pointing to 32 bits)')
                 expdata = expdata.replace('0x8000000000000000', '0x80000000')
@@ -350,7 +352,7 @@ def run_test(testdir, srcdir):
     if os.path.exists(getopts_py):
         p = Popen([sys.executable, getopts_py], stdout=PIPE, stderr=PIPE)
         opts_out, opts_err = p.communicate()
-        if six.PY3:
+        if sys.version_info[0] >= 3:
             opts_out = opts_out.decode()
             opts_err = opts_err.decode()
         c = p.wait()
@@ -379,7 +381,7 @@ def run_test(testdir, srcdir):
     # Invoke the compiler:
     p = Popen(args, env=env, stdout=PIPE, stderr=PIPE)
     out.actual, err.actual = p.communicate()
-    if six.PY3:
+    if sys.version_info[0] >= 3:
         out.actual = out.actual.decode()
         err.actual = err.actual.decode()
     #print 'out: %r' % out.actual
@@ -480,7 +482,7 @@ if options.excluded_dirs:
         exclude_tests_below(path)
 
 # Certain tests don't work on 32-bit
-if six.MAXSIZE == 0x7fffffff:
+if sys.maxsize == 0x7fffffff:
     # These two tests verify that we can detect int vs Py_ssize_t mismatches,
     # but on 32-bit these are the same type, so don't find anything:
     exclude_test('tests/cpychecker/PyArg_ParseTuple/with_PY_SSIZE_T_CLEAN')
@@ -508,7 +510,7 @@ if six.MAXSIZE == 0x7fffffff:
     exclude_test('tests/plugin/gimple-walk-tree/find-one')
 
 # Certain tests don't work for Python 3:
-if six.PY3:
+if sys.version_info[0] >= 3:
     # The PyInt_ API doesn't exist anymore in Python 3:
     exclude_tests_below('tests/cpychecker/refcounts/PyInt_AsLong/')
     exclude_tests_below('tests/cpychecker/refcounts/PyInt_FromLong/')
@@ -721,7 +723,7 @@ if GCC_VERSION >= 5000:
     exclude_test('tests/plugin/rtl')
 
     # Various tests failing with Python 3 with GCC 5:
-    if six.PY3:
+    if sys.version_info[0] >= 3:
         exclude_test('tests/cpychecker/absinterp/arithmetic/division-by-zero/definite')
         exclude_test('tests/cpychecker/absinterp/arithmetic/division-by-zero/possible')
         exclude_test('tests/cpychecker/absinterp/arithmetic/negative-shift/possible')

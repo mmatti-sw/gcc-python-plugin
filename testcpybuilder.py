@@ -25,8 +25,6 @@ import sysconfig
 import tempfile
 import unittest
 
-import six
-
 from cpybuilder import *
 
 def get_module_filename(name):
@@ -96,7 +94,7 @@ class BuiltModule:
         # Invoke the compiler:
         self.p = Popen(self.args, env=env, stdout=PIPE, stderr=PIPE)
         self.out, self.err = self.p.communicate()
-        if six.PY3:
+        if sys.version_info[0] >= 3:
             self.out = self.out.decode()
             self.err = self.err.decode()
         c = self.p.wait()

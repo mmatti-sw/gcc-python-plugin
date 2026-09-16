@@ -33,12 +33,6 @@ The plugin has the following requirements:
 
   * Python 3, with its development headers.  Python 2 is no longer supported.
 
-  * "six": The libcpychecker code uses the "six" Python compatibility library to
-    smooth over Python 2 vs Python 3 differences, both at build-time and
-    run-time:
-
-       http://pypi.python.org/pypi/six/
-
   * "pygments": The libcpychecker code uses the "pygments" Python
     syntax-highlighting library when writing out error reports:
 
@@ -85,7 +79,7 @@ On a Fedora box you can install them by running the following as root:
 
 .. code-block:: bash
 
-   dnf install gcc-c++ gcc-plugin-devel python3-devel python3-six python3-pygments graphviz
+   dnf install gcc-c++ gcc-plugin-devel python3-devel python3-pygments graphviz
 
 Building the code
 ------------------

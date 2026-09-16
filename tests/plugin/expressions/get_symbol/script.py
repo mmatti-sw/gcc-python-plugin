@@ -34,7 +34,10 @@ for name in sorted(dir(gcc)):
             t.add_row((':py:class:`gcc.%s`' % name,
                        '`%s`' % sym.strip()))
 
-from six import StringIO
+try:
+    from StringIO import StringIO  # Python 2
+except ImportError:
+    from io import StringIO
 s = StringIO()
 t.write(s)
 

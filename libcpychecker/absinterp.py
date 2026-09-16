@@ -19,7 +19,15 @@ import gcc
 import gccutils
 import re
 import sys
-from six import StringIO, integer_types
+try:
+    from StringIO import StringIO  # Python 2
+except ImportError:
+    from io import StringIO
+
+if sys.version_info[0] >= 3:
+    integer_types = (int,)
+else:
+    integer_types = (int, long)
 
 from gccutils import get_src_for_loc, get_nonnull_arguments, check_isinstance
 from gccutils.graph.stmtgraph import StmtGraph, StmtNode
