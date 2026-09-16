@@ -1,0 +1,5 @@
+GimpleAssign: int
+GimpleCall: int
+GimpleCond: bool
+GimpleLabel: void
+GimpleReturn: void
