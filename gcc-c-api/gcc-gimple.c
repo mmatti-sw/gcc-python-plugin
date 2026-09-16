@@ -33,6 +33,7 @@
 #include "gimple-expr.h" /* needed by gimple.h in 4.9 */
 #endif
 #include "gimple.h"
+#include "gcc-private-compat.h"
 
 #if 0
 
@@ -112,9 +113,34 @@ GCC_IMPLEMENT_PUBLIC_API (gcc_tree) gcc_gimple_get_block (gcc_gimple stmt)
   return gcc_private_make_tree (gimple_block (stmt.inner));
 }
 
+#if (GCC_VERSION >= 12000)
+/* GCC 12 removed gimple_expr_type; this is its GCC 11 implementation,
+   without the special cases for internal vectorizer store calls.  */
+static tree
+gcc_compat_gimple_expr_type (const gimple *stmt)
+{
+  enum gimple_code code = gimple_code (stmt);
+  if (code == GIMPLE_CALL)
+    return gimple_call_return_type (as_a <const gcall *> (stmt));
+  else if (code == GIMPLE_ASSIGN)
+    {
+      if (gimple_assign_rhs_code (stmt) == POINTER_PLUS_EXPR)
+        return TREE_TYPE (gimple_assign_rhs1 (stmt));
+      else
+        return TREE_TYPE (gimple_get_lhs (stmt));
+    }
+  else if (code == GIMPLE_COND)
+    return boolean_type_node;
+  else if (code == GIMPLE_PHI)
+    return TREE_TYPE (gimple_phi_result (stmt));
+  else
+    return void_type_node;
+}
+#endif
+
 GCC_IMPLEMENT_PUBLIC_API (gcc_tree) gcc_gimple_get_expr_type (gcc_gimple stmt)
 {
-  return gcc_private_make_tree (gimple_expr_type (stmt.inner));
+  return gcc_private_make_tree (GCC_COMPAT_GIMPLE_EXPR_TYPE (stmt.inner));
 }
 
 /***************************************************************************

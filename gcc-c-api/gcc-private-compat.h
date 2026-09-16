@@ -74,6 +74,22 @@
 #endif
 
 
+/*************************************************************************
+ GIMPLE
+ *************************************************************************/
+
+/* GCC 12 removed gimple_expr_type.  The replacement lives in
+   gcc-gimple.c rather than here, because this header is also included
+   by files that do not include gimple.h.  */
+#if (GCC_VERSION >= 12000)
+  #define GCC_COMPAT_GIMPLE_EXPR_TYPE(STMT) \
+    gcc_compat_gimple_expr_type (STMT)
+#else
+  #define GCC_COMPAT_GIMPLE_EXPR_TYPE(STMT) \
+    gimple_expr_type (STMT)
+#endif
+
+
 /*
 Local variables:
 c-basic-offset: 2
