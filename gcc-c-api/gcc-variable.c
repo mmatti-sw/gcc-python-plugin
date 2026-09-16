@@ -21,6 +21,7 @@
 #include "ggc.h"
 #include "tree.h"
 #include "cgraph.h"		/* for varpool_nodes */
+#include "gcc-private-compat.h"
 
 /***********************************************************
    gcc_variable
@@ -37,18 +38,9 @@ GCC_IMPLEMENT_PUBLIC_API (void) gcc_variable_mark_in_use (gcc_variable var)
 {
   /* Mark the underlying object (recursing into its fields): */
 
-  /* In GCC 4.8, struct varpool_node became part of union symtab_node_def, and
-     In GCC 4.9, union symtab_node_def became class symtab_node.
-  */
-#if (GCC_VERSION >= 4009)
-  gt_ggc_mx_symtab_node (var.inner);
-#else
-#  if (GCC_VERSION >= 4008)
-  gt_ggc_mx_symtab_node_def (var.inner);
-#  else
-  gt_ggc_mx_varpool_node (var.inner);
-#  endif
-#endif
+  /* A varpool_node is marked through its base class; see
+     gcc-private-compat.h for which one that is.  */
+  GCC_COMPAT_GT_GGC_MX_VARPOOL_NODE (var.inner);
 }
 
 GCC_IMPLEMENT_PUBLIC_API (gcc_tree) gcc_variable_get_decl (gcc_variable var)

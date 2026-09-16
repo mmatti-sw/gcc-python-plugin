@@ -31,6 +31,7 @@
 #include "gimple-expr.h" /* needed by gimple.h in 4.9 */
 #endif
 #include "gimple.h"
+#include "gcc-private-compat.h"
 
 /***********************************************************
    gcc_cgraph_node
@@ -45,14 +46,9 @@ gcc_private_make_cgraph_node (struct cgraph_node *inner)
 
 GCC_PUBLIC_API (void) gcc_cgraph_node_mark_in_use (gcc_cgraph_node node)
 {
-  /* As of gcc 4.9, a cgraph_node inherits from symtab node and uses that
-     struct's marking routine.
-  */
-#if (GCC_VERSION >= 4009)
-  gt_ggc_mx_symtab_node (node.inner);
-#else
-  gt_ggc_mx_cgraph_node (node.inner);
-#endif
+  /* A cgraph_node is marked through its base class; see
+     gcc-private-compat.h for which one that is.  */
+  GCC_COMPAT_GT_GGC_MX_CGRAPH_NODE (node.inner);
 }
 
 GCC_PUBLIC_API (gcc_function_decl)

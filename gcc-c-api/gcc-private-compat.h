@@ -90,6 +90,29 @@
 #endif
 
 
+/*************************************************************************
+ Garbage collection
+ *************************************************************************/
+
+/* cgraph_node and varpool_node are marked through their base class, and
+   which class that is has changed over time: in GCC 4.8 varpool_node
+   became part of union symtab_node_def, in GCC 4.9 that union became
+   class symtab_node, and GCC 16 added toplevel_node below it.  */
+#if (GCC_VERSION >= 16000)
+  #define GCC_COMPAT_GT_GGC_MX_CGRAPH_NODE(NODE)  gt_ggc_mx_toplevel_node (NODE)
+  #define GCC_COMPAT_GT_GGC_MX_VARPOOL_NODE(NODE) gt_ggc_mx_toplevel_node (NODE)
+#elif (GCC_VERSION >= 4009)
+  #define GCC_COMPAT_GT_GGC_MX_CGRAPH_NODE(NODE)  gt_ggc_mx_symtab_node (NODE)
+  #define GCC_COMPAT_GT_GGC_MX_VARPOOL_NODE(NODE) gt_ggc_mx_symtab_node (NODE)
+#elif (GCC_VERSION >= 4008)
+  #define GCC_COMPAT_GT_GGC_MX_CGRAPH_NODE(NODE)  gt_ggc_mx_cgraph_node (NODE)
+  #define GCC_COMPAT_GT_GGC_MX_VARPOOL_NODE(NODE) gt_ggc_mx_symtab_node_def (NODE)
+#else
+  #define GCC_COMPAT_GT_GGC_MX_CGRAPH_NODE(NODE)  gt_ggc_mx_cgraph_node (NODE)
+  #define GCC_COMPAT_GT_GGC_MX_VARPOOL_NODE(NODE) gt_ggc_mx_varpool_node (NODE)
+#endif
+
+
 /*
 Local variables:
 c-basic-offset: 2
