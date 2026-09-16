@@ -1,0 +1,2 @@
+callgraph nodes: ['callee', 'test_fn']
+variables: ['global_var']
