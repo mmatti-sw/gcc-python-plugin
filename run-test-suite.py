@@ -832,7 +832,14 @@ class TestRunner:
             tr.handle_outcome(run_one_test(testdir))
 
     def run_tests_in_parallel(self, testdirs):
-        pool = multiprocessing.Pool(None) # uses cpu_count
+        # Python 3.14 changed the default start method on Linux from fork to
+        # forkserver, which breaks this script (it runs the tests at import
+        # time), so keep using fork where we can choose.
+        if hasattr(multiprocessing, 'get_context'):
+            ctx = multiprocessing.get_context('fork')
+        else:
+            ctx = multiprocessing
+        pool = ctx.Pool(None) # uses cpu_count
         for outcome in pool.map(run_one_test, testdirs):
             tr.handle_outcome(outcome)
 
