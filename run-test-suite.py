@@ -519,6 +519,12 @@ if sys.maxsize == 0x7fffffff:
     exclude_test('tests/plugin/gimple-walk-tree/dump-all')
     exclude_test('tests/plugin/gimple-walk-tree/find-one')
 
+# Python 3.13 marked Py_UNICODE as deprecated, so these tests now get
+# -Wdeprecated-declarations warnings:
+if sys.version_info >= (3, 13):
+    exclude_test('tests/cpychecker/Py_BuildValue/code_u/correct')
+    exclude_test('tests/cpychecker/Py_BuildValue/code_u_hash/correct')
+
 # Certain tests don't work for Python 3:
 if sys.version_info[0] >= 3:
     # The PyInt_ API doesn't exist anymore in Python 3:
