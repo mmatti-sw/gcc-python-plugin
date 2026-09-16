@@ -60,6 +60,20 @@
 
 
 
+/*************************************************************************
+ Declarations
+ *************************************************************************/
+
+/* GCC 11 renamed DECL_IS_BUILTIN to DECL_IS_UNDECLARED_BUILTIN.  */
+#if (GCC_VERSION >= 11000)
+  #define GCC_COMPAT_DECL_IS_BUILTIN(DECL) \
+    DECL_IS_UNDECLARED_BUILTIN (DECL)
+#else
+  #define GCC_COMPAT_DECL_IS_BUILTIN(DECL) \
+    DECL_IS_BUILTIN (DECL)
+#endif
+
+
 /*
 Local variables:
 c-basic-offset: 2
