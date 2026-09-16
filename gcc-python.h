@@ -42,6 +42,13 @@
 #include "params.h"
 #endif
 
+/* gcc 14 moved class rich_location out of line-map.h into its own header.
+   This include is here rather than in gcc-python-compat.h because the
+   wrapper declared below needs the complete type.  */
+#if (GCC_VERSION >= 14000)
+#include "rich-location.h"
+#endif
+
 #endif
 #include "gcc-c-api/gcc-cfg.h"
 
