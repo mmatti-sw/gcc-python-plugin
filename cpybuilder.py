@@ -85,6 +85,13 @@ class NamedEntity:
         else:
             return '    %s%s, /* %s */\n' % (caststr, val, name)
 
+    def c_zero_field(self, name):
+        if with_gcc_extensions:
+            # Designated initializers zero the fields they don't mention
+            return ''
+        else:
+            return '    0, /* %s */\n' % name
+
 class PyGetSetDef:
     def __init__(self, name, get, set, doc, closure=None):
         self.name = name
@@ -249,23 +256,33 @@ class PyTypeObject(NamedEntity):
             ob_type_str = getattr(self, 'ob_type')
         else:
             ob_type_str = 'NULL'
-        result = '    PyVarObject_HEAD_INIT(%s, 0)\n' % ob_type_str
-        result += '    "%(tp_name)s", /*tp_name*/\n' % self.__dict__
-        result += '    sizeof(%(struct_name)s), /*tp_basicsize*/\n' % self.__dict__
-        result += '    0, /*tp_itemsize*/\n'
+        if with_gcc_extensions:
+            # C++20 (the default as of GCC 16) rejects initializers that mix
+            # designated and positional fields, so designate all of them.
+            result = '#if PY_MAJOR_VERSION >= 3\n'
+            result += '    .ob_base = PyVarObject_HEAD_INIT(%s, 0)\n' % ob_type_str
+            result += '#else\n'
+            result += '    PyVarObject_HEAD_INIT(%s, 0)\n' % ob_type_str
+            result += '#endif\n'
+        else:
+            result = '    PyVarObject_HEAD_INIT(%s, 0)\n' % ob_type_str
+        result += self.c_src_field_value('tp_name', '"%s"' % self.tp_name)
+        result += self.c_src_field_value('tp_basicsize',
+                                         'sizeof(%s)' % self.struct_name)
+        result += self.c_zero_field('tp_itemsize')
         result += self.c_ptr_field('tp_dealloc')
         result += '#if PY_VERSION_HEX >= 0x03080000\n'
-        result += '    0, /*tp_vectorcall_offset*/\n'
+        result += self.c_zero_field('tp_vectorcall_offset')
         result += '#else\n'
         result += self.c_ptr_field('tp_print')
         result += '#endif\n'
         result += self.c_ptr_field('tp_getattr')
         result += self.c_ptr_field('tp_setattr')
-        result += '#if PY_MAJOR_VERSION < 3\n' % self.__dict__
-        result += '    0, /*tp_compare*/\n' % self.__dict__
-        result += '#else\n' % self.__dict__
-        result += '    0, /*reserved*/\n' % self.__dict__
-        result += '#endif\n' % self.__dict__
+        result += '#if PY_MAJOR_VERSION < 3\n'
+        result += self.c_zero_field('tp_compare')
+        result += '#else\n'
+        result += self.c_zero_field('reserved')
+        result += '#endif\n'
         result += self.c_ptr_field('tp_repr')
         result += self.c_ptr_field('tp_as_number')
         result += self.c_ptr_field('tp_as_sequence')
@@ -277,11 +294,11 @@ class PyTypeObject(NamedEntity):
         result += self.c_ptr_field('tp_setattro')
         result += self.c_ptr_field('tp_as_buffer')
         result += self.c_src_field('tp_flags')
-        result += '    0, /*tp_doc*/\n'
+        result += self.c_zero_field('tp_doc')
         result += self.c_ptr_field('tp_traverse')
         result += self.c_ptr_field('tp_clear')
         result += self.c_ptr_field('tp_richcompare')
-        result += '    0, /* tp_weaklistoffset */\n'
+        result += self.c_zero_field('tp_weaklistoffset')
         result += self.c_ptr_field('tp_iter')
         result += self.c_ptr_field('tp_iternext')
         result += self.c_ptr_field('tp_methods')
@@ -291,7 +308,7 @@ class PyTypeObject(NamedEntity):
         result += self.c_ptr_field('tp_dict')
         result += self.c_ptr_field('tp_descr_get')
         result += self.c_ptr_field('tp_descr_set')
-        result += '    0, /* tp_dictoffset */\n'
+        result += self.c_zero_field('tp_dictoffset')
         result += self.c_ptr_field('tp_init', 'initproc')
         result += self.c_ptr_field('tp_alloc')
         result += self.c_ptr_field('tp_new')
@@ -303,9 +320,9 @@ class PyTypeObject(NamedEntity):
         result += self.c_ptr_field('tp_subclasses')
         result += self.c_ptr_field('tp_weaklist')
         result += self.c_ptr_field('tp_del')
-        result += '#if PY_VERSION_HEX >= 0x02060000\n' % self.__dict__
-        result += '    0, /*tp_version_tag*/\n' % self.__dict__
-        result += '#endif\n' % self.__dict__
+        result += '#if PY_VERSION_HEX >= 0x02060000\n'
+        result += self.c_zero_field('tp_version_tag')
+        result += '#endif\n'
         result += '\n'
         return result
 
