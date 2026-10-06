@@ -114,6 +114,33 @@ e.g.:
 
    make PYTHON=python3.12 PYTHON_CONFIG=python3.12-config
 
+Building against a GCC whose packages you cannot install
+--------------------------------------------------------
+
+The plugin is compiled against the plugin headers of the exact GCC release
+it will be loaded into, which normally come from a distribution package.
+Where such a package cannot be installed, for example on a shared build
+machine without root, it can be unpacked into a home directory instead and
+pointed at with the `GCCPLUGINS_DIR` Makefile variable:
+
+.. code-block:: bash
+
+   # Debian or Ubuntu, here for gcc-14:
+   apt-get download gcc-14-plugin-dev
+   dpkg-deb -x gcc-14-plugin-dev_*.deb $HOME/local
+
+   make CC=gcc-14 \
+        GCCPLUGINS_DIR=$HOME/local/usr/lib/gcc/x86_64-linux-gnu/14/plugin \
+        plugin
+
+On an RPM distribution, ``dnf download gcc-plugin-devel`` and
+``rpm2cpio ... | cpio -idm`` do the same job.
+
+The headers have to match the compiler exactly; GCC refuses to load a
+plugin built against a different release.  Note also that the plugin is
+compiled as C++, so the matching C++ compiler has to be present even
+though the headers were unpacked by hand.
+
 There isn't a well-defined process yet for installing the plugin (though the
 rpm specfile in the source tree contains some work-in-progress towards this).
 
