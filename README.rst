@@ -39,14 +39,22 @@ That support is historical and is no longer maintained.
 
 GCC does not provide a stable plugin API: its internals change from one
 release to the next, so compatibility has to be established, and tested,
-separately for each GCC release.  Compatibility with current GCC releases is
-being re-established, and no GCC release is claimed as supported until the
-plugin has been built and its test suite run against it.  Verified GCC
-releases will be listed here.
+separately for each GCC release.  No GCC release is claimed as supported
+until the plugin has been built and its test suite run against it.
+
+Verified as of October 2026:
+
+* GCC: 10, 11, 12, 13, 14, 15 and 16
+
+* Python: 3.9, 3.10, 3.13 and 3.14
+
+* Architectures: x86_64, ppc64le and big-endian ppc64
+
+The combinations built and tested on every push are those in
+``.github/workflows/ci.yml``; the rest are tested by hand on the GCC
+Compile Farm.
 
 Python 3 is the maintenance target; Python 2 is no longer supported.
-
-x86_64 and ppc64le are the intended test platforms.
 
 
 Requirements
