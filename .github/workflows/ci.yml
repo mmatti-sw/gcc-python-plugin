@@ -1,9 +1,8 @@
 # Continuous integration for gcc-python-plugin
 #
-# Stage 1 of the CI plan: one reproducible Linux x86_64 job using Python 3
-# and a single GCC release.  Further GCC releases (14, 15, 16 and trunk) and
-# architectures (ppc64le, aarch64) will be added as their compatibility work
-# lands.
+# Linux x86_64 jobs for the GCC releases this project is maintained for.
+# GCC trunk and further architectures are still to come; ppc64le and
+# big-endian ppc64 are tested by hand on the GCC Compile Farm meanwhile.
 
 name: CI
 
@@ -17,19 +16,26 @@ permissions:
 
 jobs:
   build-and-test:
-    name: GCC ${{ matrix.gcc }}, Python 3, ${{ matrix.image }}
+    name: GCC ${{ matrix.gcc }}, ${{ matrix.image }}
     runs-on: ubuntu-latest
     container: ${{ matrix.image }}
     strategy:
       fail-fast: false
       matrix:
         include:
-          # GCC 11 and later do not build the current sources yet, so use
-          # GCC 10.  Ubuntu 22.04 provides it together with Python 3.10; the
-          # test tooling still relies on distutils and
-          # configparser.SafeConfigParser, which Python 3.12 removed.
+          # The oldest release still built and tested; Python 3.10.
           - image: ubuntu:22.04
             gcc: 10
+          # Python 3.12.
+          - image: ubuntu:24.04
+            gcc: 14
+          # GCC 15 and 16 are only packaged in Debian unstable so far;
+          # Python 3.14.  Unstable moves, so these two jobs can start
+          # failing for reasons outside this repository.
+          - image: debian:sid
+            gcc: 15
+          - image: debian:sid
+            gcc: 16
     defaults:
       run:
         shell: bash
@@ -58,8 +64,7 @@ jobs:
           python3 --version
 
       - name: Build the plugin
-        # Serial build: the Makefile is not yet safe for "make -j"
-        run: make CC=gcc plugin
+        run: make -j"$(nproc)" CC=gcc plugin
 
       - name: Check that GCC loads the plugin
         run: |
@@ -74,8 +79,4 @@ jobs:
         run: make CC=gcc testcpybuilder testdejagnu
 
       - name: Run the test suite
-        # Some tests are expected to fail with current Python releases (for
-        # example, SyntaxError reports place the caret differently).  Report
-        # the results without failing the job until those are fixed.
-        continue-on-error: true
         run: make CC=gcc test-suite
